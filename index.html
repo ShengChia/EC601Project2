@@ -35,6 +35,18 @@
 
                     // Update the map's center to the user's current location
                     map.setCenter(userLocation);
+                    var marker = new google.maps.Marker({
+                      position: userLocation,
+                      map: map,
+                      icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillOpacity: 1,
+                        strokeWeight: 2,
+                        fillColor: '#5384ED',
+                        strokeColor: '#ffffff',
+                      },
+                    });
 
                     // Create a PlacesService object to perform a nearby search
                     var service = new google.maps.places.PlacesService(map);
