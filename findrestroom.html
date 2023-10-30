@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find Nearest Restroom with Timed Notifications</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Find Nearest Restroom with Timed Notifications</h1>
+    <div id="map"></div>
+
+    <script>
+        var map;
+        var notificationInterval;
+
+        // Initialize and display the map
+        function initMap() {
+            // Create a new map centered at the user's current location
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0, lng: 0 }, // Default center (to be updated with user's location)
+                zoom: 15 // Default zoom level
+            });
+
+            // Get the user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Update the map's center to the user's current location
+                    map.setCenter(userLocation);
+
+                    // Create a PlacesService object to perform a nearby search
+                    var service = new google.maps.places.PlacesService(map);
+
+                    // Define the search request
+                    var request = {
+                        location: map.getCenter(),
+                        radius: 500, // Search within a 500-meter radius (adjust as needed)
+                        // type: ['restroom'] // Specify the type as 'restroom'
+                        keyword: 'restroom'
+                    };
+
+                    // Perform the initial nearby search
+                    service.nearbySearch(request, function(results, status) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            // Get the first result (the nearest restroom)
+                            var restroomLocation = results[0].geometry.location;
+
+                            // Add a marker for the nearest restroom
+                            var restroomMarker = new google.maps.Marker({
+                                position: restroomLocation,
+                                map: map,
+                                title: 'Nearest Restroom'
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Set an interval to trigger a notification every 30 minutes (adjust as needed)
+            notificationInterval = setInterval(function() {
+                // You can customize the notification content here
+                var notification = new Notification('Time for a restroom break!', {
+                    body: 'There is a restroom nearby.'
+                });
+            }, 30 * 60 * 1000); // 30 minutes in milliseconds
+        }
+    </script>
+
+    <!-- Request permission to display notifications -->
+    <script>
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+    </script>
+
+    <!-- Load the Google Maps JavaScript API with your API key -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChTno8IFJIC6bOvCZkWR55p9MvpPLTc9Q&libraries=places&callback=initMap">
+    </script>
+</body>
+</html>
